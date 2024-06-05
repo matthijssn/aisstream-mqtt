@@ -1,0 +1,33 @@
+{
+  "name": "aisstream-mqtt",
+  "version": "0.0.1",
+  "description": "Docker process to retreive aisstream information and publish it to a mqtt topic",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/matthijssn/aisstream-mqtt.git"
+  },
+  "keywords": [
+    "mqtt",
+    "aisstream",
+    "smart",
+    "homeassistant",
+    "nodejs",
+    "docker"
+  ],
+  "author": "Matthijs",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/matthijssn/aisstream-mqtt/issues"
+  },
+  "homepage": "https://github.com/matthijssn/aisstream-mqtt#readme",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "mqtt": "^5.0.5",
+    "node-wifi": "^2.0.16",
+    "ws": "^8.17.0"
+  }
+}

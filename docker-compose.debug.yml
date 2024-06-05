@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  wifianalyzermqtt:
+    image: wifianalyzermqtt
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: development 
+      mqttHost: 'mqtt://host'
+      mqttTopic: 'topic/'
+      mqttUserName: ''
+      mqttPassword: ''
+      aisStreamAPIKey: ''      
+      aisStreamMMSI: []    
+      aisStreamBoxCornerOneLat: 0
+      aisStreamBoxCornerOneLon: 0
+      aisStreamBoxCornerTwoLat: 0
+      aisStreamBoxCornerTwoLon: 0
