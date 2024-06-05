@@ -60,14 +60,14 @@ class AISStreamToMqtt {
             let aisMessage = JSON.parse(event.data);   
             console.log('Message: ');       
             console.log(aisMessage);
-            context._publishAISMessage(aisMessage);
+            context._publishAISMessage(aisMessage, context.mqttPrefix);
            // this._publishAISMessage(aisMessage);
         }
     }
 
-    async _publishAISMessage(aisMessage) {      
+    async _publishAISMessage(aisMessage, mqttPrefix) {      
         // Disco topic
-        const discoTopic = `${this.mqttPrefix}/device_tracker/aisstream`; 
+        const discoTopic = `${mqttPrefix}/device_tracker/aisstreammqtt`; 
         // Data topic
         const dataTopic = `aisstreammqtt`; 
         
