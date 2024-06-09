@@ -36,6 +36,7 @@ async function start() {
 
     await as.connect();
 
+
     await as.start();
 }
 
