@@ -16,7 +16,7 @@ class AISStreamToMqtt {
         this.aisStreamBoundingBoxes = aisStreamBoundingBoxes;
     
 
-        this._client = {};
+        global._client = {};
         this._state = {
             mqttConnected: false
         }
@@ -36,12 +36,12 @@ class AISStreamToMqtt {
         let apiKey = this.aisStreamAPIKey;
         let mmsi = this.aisStreamMMSI;
         let boundingBoxes = this.aisStreamBoundingBoxes;
-
-
+        let mqttPrefix = this.mqttPrefix;
+ 
        // console.log(boundingBox);
         socket.onopen = function (_) {
 
-            console.log(apiKey);
+            //console.log(apiKey);
             let subscriptionMessage = {
                 ApiKey: apiKey,
                 BoundingBoxes: boundingBoxes,
@@ -51,6 +51,36 @@ class AISStreamToMqtt {
 
             console.log(util.inspect(subscriptionMessage, {showHidden: false, depth: null, colors: true}));
             socket.send(JSON.stringify(subscriptionMessage));
+
+            // Disco topic
+            const discoTopic = `${mqttPrefix}/device_tracker/aisstreammqtt`;        
+
+             // Data topic
+            const dataTopic = `aisstreammqtt`; 
+           
+            mmsi.forEach( object => {            
+                // Define the JSON payload for Autodiscovery
+                const autodiscoveryPayload = {
+                    name: `AISMessageMQTT-${object}`,
+                    uniq_id: `aisstream-mqtt-${object}`,  
+                    json_attributes_topic: `${dataTopic}/${object}/attributes`,  
+                    source_type: 'gps',
+                    icon: 'mdi:ship',
+                };
+                
+                if(_client != undefined) {        
+                    console.log(`Publish discovery topic for ${discoTopic}/${object}/config `);     
+
+                    _client.publish(`${discoTopic}/${object}/config`,JSON.stringify(autodiscoveryPayload), { qos: 0, retain: true}, (err)=> {
+                    if (err) {
+                        console.error('Error publishing Autodiscovery message:', err);
+                        } else {
+                        console.log('Autodiscovery message published successfully');
+                        }
+                    }) ;
+                    }
+
+                });
         }
 
         let context = this;
@@ -71,23 +101,6 @@ class AISStreamToMqtt {
         // Data topic
         const dataTopic = `aisstreammqtt`; 
         
-        // Define the JSON payload for Autodiscovery
-        const autodiscoveryPayload = {
-            name: `AISMessageMQTT-${aisMessage.MetaData.MMSI}`,
-            uniq_id: `aisstream-mqtt-${aisMessage.MetaData.MMSI}`,  
-            json_attributes_topic: `${dataTopic}/${aisMessage.MetaData.MMSI}/attributes`,  
-            source_type: 'gps',
-            icon: 'mdi:ship',
-        };
-        console.log(`Publish discovery topic for ${discoTopic}/${aisMessage.MetaData.MMSI}/config `);                          
-        await this._client.publish(`${discoTopic}/$${aisMessage.MetaData.MMSI}/config`,JSON.stringify(autodiscoveryPayload), { qos: 0, retain: true}, (err)=> {
-        if (err) {
-            console.error('Error publishing Autodiscovery message:', err);
-            } else {
-            console.log('Autodiscovery message published successfully');
-            }
-        }) ;
-
         let payLoad = {
            "latitude" : aisMessage.MetaData.latitude,
            "longitude" : aisMessage.MetaData.longitude,
@@ -95,7 +108,7 @@ class AISStreamToMqtt {
         };
         
         console.log(`Publish attributes topic for ${dataTopic}/${aisMessage.MetaData.MMSI}/attributes`);      
-        await this._client.publish( `${dataTopic}/${aisMessage.MetaData.MMSI}/attributes`, JSON.stringify(payLoad), { qos: 0, retain: true}, (err)=> {
+        await _client.publish( `${dataTopic}/${aisMessage.MetaData.MMSI}/attributes`, JSON.stringify(payLoad), { qos: 0, retain: true}, (err)=> {
             if (err) {
                 console.error('Error publishing ais message:', err);
             } else {
@@ -108,11 +121,11 @@ class AISStreamToMqtt {
 
     async _setupConnection(mqttHost, options = {}) {
         try {
-            this._client = await mqtt.connect(mqttHost, options)
-            this._client.on('connect', () => this._connectionHandler())
-            this._client.on('close', () => this._disconnectionHandler())
-            this._client.on('message', (topic, payload) => this._messageHandler(topic, payload))
-            this._client.on('error', (error) => this._errorHandler(error))
+            _client = await mqtt.connect(mqttHost, options)
+            _client.on('connect', () => this._connectionHandler())
+            _client.on('close', () => this._disconnectionHandler())
+            _client.on('message', (topic, payload) => this._messageHandler(topic, payload))
+            _client.on('error', (error) => this._errorHandler(error))
         } catch (error) {
             console.error(`Error connecting to to ${mqttHost}: ${error}`)
         }
