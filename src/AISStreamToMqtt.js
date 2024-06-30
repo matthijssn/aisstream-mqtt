@@ -46,7 +46,7 @@ class AISStreamToMqtt {
                 ApiKey: apiKey,
                 BoundingBoxes: boundingBoxes,
                 FiltersShipMMSI: mmsi,
-                FilterMessageTypes: ["PositionReport"]
+                //FilterMessageTypes: ["PositionReport"]
             }
 
             console.log(util.inspect(subscriptionMessage, {showHidden: false, depth: null, colors: true}));
@@ -90,8 +90,9 @@ class AISStreamToMqtt {
             let aisMessage = JSON.parse(event.data);   
             console.log('Message: ');       
             console.log(aisMessage);
-            context._publishAISMessage(aisMessage, context.mqttPrefix);
-           // this._publishAISMessage(aisMessage);
+            if(aisMessage["MessageType"] === "PositionReport") {
+                context._publishAISMessage(aisMessage, context.mqttPrefix);
+            }           
         }
     }
 
@@ -104,7 +105,8 @@ class AISStreamToMqtt {
         let payLoad = {
            "latitude" : aisMessage.MetaData.latitude,
            "longitude" : aisMessage.MetaData.longitude,
-           "gps_accuracy": 1.2
+           "gps_accuracy": 1.2,
+           "shipName" : aisMessage.MetaData.ShipName
         };
         
         console.log(`Publish attributes topic for ${dataTopic}/${aisMessage.MetaData.MMSI}/attributes`);      
