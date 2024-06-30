@@ -45,8 +45,7 @@ class AISStreamToMqtt {
             let subscriptionMessage = {
                 ApiKey: apiKey,
                 BoundingBoxes: boundingBoxes,
-                FiltersShipMMSI: mmsi,
-                //FilterMessageTypes: ["PositionReport"]
+                FiltersShipMMSI: mmsi,                
             }
 
             console.log(util.inspect(subscriptionMessage, {showHidden: false, depth: null, colors: true}));
