@@ -89,7 +89,7 @@ class AISStreamToMqtt {
             let aisMessage = JSON.parse(event.data);   
             console.log('Message: ');       
             console.log(aisMessage);
-            if(aisMessage["MessageType"] === "PositionReport") {
+            if(aisMessage["MessageType"] === "PositionReport" || aisMessage["MessageType"] === "StandardClassBPositionReport") {
                 context._publishAISMessage(aisMessage, context.mqttPrefix);
             }           
         }
