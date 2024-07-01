@@ -31,4 +31,4 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: matthijssn/aisstream-mqtt:${{ github.event.release.name }} matthijssn/aisstream-mqtt:latest
+          tags: matthijssn/aisstream-mqtt:latest,matthijssn/aisstream-mqtt:${{ github.event.release.name }}
