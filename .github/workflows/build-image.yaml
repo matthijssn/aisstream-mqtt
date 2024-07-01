@@ -25,6 +25,8 @@ jobs:
           images: matthijssn/aisstream-mqtt 
           tags: |
             type=semver,pattern={{version}}
+          labels: |
+            org.matthijssn.aisstream-mqtt.version=${{ github.event.release.name }}
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:

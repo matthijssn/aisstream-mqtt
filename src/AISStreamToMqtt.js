@@ -64,6 +64,8 @@ class AISStreamToMqtt {
                     uniq_id: `aisstream-mqtt-${object}`,  
                     json_attributes_topic: `${dataTopic}/${object}/attributes`,  
                     source_type: 'gps',
+                    payload_home: 'moored',
+                    payload_not_home: 'Under way',
                     icon: 'mdi:ship',
                 };
                 
@@ -89,9 +91,16 @@ class AISStreamToMqtt {
             let aisMessage = JSON.parse(event.data);   
             console.log('Message: ');       
             console.log(aisMessage);
-            if(aisMessage["MessageType"] === "PositionReport" || aisMessage["MessageType"] === "StandardClassBPositionReport") {
-                context._publishAISMessage(aisMessage, context.mqttPrefix);
-            }           
+            switch (aisMessage["MessageType"]) {
+                case "PositionReport" :
+                case "StaticDataReport" :
+                case "StandardClassBPositionReport":
+                {
+                    context._publishAISMessage(aisMessage, context.mqttPrefix);
+                    break;
+                }
+            }
+                
         }
     }
 
